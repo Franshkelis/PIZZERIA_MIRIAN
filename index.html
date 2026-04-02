@@ -644,8 +644,15 @@ function sendToWhatsApp() {
     msg += `💳 *Pago:* ${method}\n`;
     if(notes) msg += `📝 *Notas:* ${notes}\n`;
 
-    const phone = "8094092740";
-    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
+    // 1. IMPORTANTE: Agregar el '1' al principio para República Dominicana
+    const phone = "18094092740"; 
+    
+    // 2. Usar api.whatsapp.com y encodeURIComponent
+    const url = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}`;
+
+    // 3. En iPhone, a veces window.open falla si no hay una interacción directa clara
+    // Esta es la forma más compatible:
+    window.location.href = url;
 }
 
 renderMenu('pizza');
