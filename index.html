@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -652,4 +653,660 @@ renderMenu('pizza');
 </script>
 
 </body>
+=======
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizza MIRIAN | Pedido Rápido 🍕</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --pizza-red: #d32f2f;
+            --pizza-orange: #f57c00;
+            --pizza-yellow: #ffb300;
+            --pizza-dark: #2d2d2d;
+            --pizza-bg: #fffbf2;
+        }
+
+        body { 
+            background: var(--pizza-bg); 
+            font-family: 'Poppins', sans-serif;
+            color: var(--pizza-dark);
+        }
+
+        .navbar { background: white !important; border-bottom: 3px solid var(--pizza-yellow); padding: 10px 0; }
+        .navbar-brand { font-weight: 800; color: var(--pizza-red) !important; font-size: 1.3rem; }
+
+        /* Categorías */
+        .category-scroller {
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            background: white;
+            padding: 10px;
+            gap: 10px;
+            position: sticky;
+            top: 60px;
+            z-index: 1000;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            scrollbar-width: none;
+        }
+        .category-scroller::-webkit-scrollbar { display: none; }
+        
+        .cat-btn {
+            padding: 8px 20px;
+            border-radius: 25px;
+            border: 2px solid var(--pizza-orange);
+            background: transparent;
+            color: var(--pizza-orange);
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .cat-btn.active {
+            background: var(--pizza-orange);
+            color: white;
+        }
+
+        /* Tarjeta de Producto */
+        .pizza-card {
+            border: none;
+            border-radius: 20px;
+            background: white;
+            padding: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .pizza-img { width: 100%; height: 170px; object-fit: cover; border-radius: 15px; margin-bottom: 10px; }
+
+        /* Carrito */
+        .offcanvas { width: 85% !important; border-left: 5px solid var(--pizza-yellow); }
+        .cart-item { background: #fefefe; border-radius: 12px; padding: 12px; margin-bottom: 10px; border: 1px solid #eee; }
+
+        /* BOTÓN ROJO DE PEDIR (Flotante) */
+        .floating-order {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 2000; /* Por encima del fondo del modal */
+            background: #ff0000; /* Rojo vibrante */
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-weight: 800;
+            text-decoration: none;
+            box-shadow: 0 10px 25px rgba(255, 0, 0, 0.4);
+            display: none; /* Oculto por defecto */
+            align-items: center;
+            gap: 10px;
+            border: none;
+            transition: transform 0.2s;
+        }
+        .floating-order:active { transform: scale(0.95); }
+        .navbar-brand {
+  display: flex;
+  align-items: center; /* Centra el texto y la imagen verticalmente */
+  font-weight: bold;
+  text-decoration: none;
+  color: #000; /* Ajusta al color que prefieras */
+}
+
+.logo-img {
+  height: 70px;       /* Ajusta esta altura según el tamaño de tu menú */
+  width: auto;        /* Mantiene la proporción original */
+  margin-right: 10px; /* Separa el logo del texto */
+  display: inline-block;
+}
+
+        .btn-add { background: var(--pizza-orange); color: white; border-radius: 50px; font-weight: 600; border: none; width: 100%; padding: 8px; font-size: 0.9rem; }
+        .bank-box { background: #fff3e0; border: 2px dashed var(--pizza-orange); border-radius: 15px; padding: 15px; margin-top: 10px; font-size: 0.85rem; }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar sticky-top">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a class="navbar-brand" href="#">
+  <img src="img/logo/logo.png" alt="Mirian Pizzeria" class="logo-img">
+  MIRIAN PIZZERIA
+</a>
+        <button class="btn border-0 position-relative" data-bs-toggle="offcanvas" data-bs-target="#cartSidebar">
+            <i class="bi bi-cart-fill fs-3" style="color: var(--pizza-orange);"></i>
+            <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle" id="cartCount">0</span>
+        </button>
+    </div>
+</nav>
+
+<div class="category-scroller">
+    <button class="cat-btn active" onclick="filterMenu('pizza', this)">🍕 Pizzas</button>
+    <button class="cat-btn" onclick="filterMenu('sandwich', this)">🥪 Sándwiches</button>
+    <button class="cat-btn" onclick="filterMenu('Jugos', this)">🥤 Jugos</button>
+</div>
+
+<div class="container mt-3 mb-5">
+    <div class="row g-3" id="menuContainer"></div>
+</div>
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="cartSidebar">
+    <div class="offcanvas-header bg-light">
+        <h5 class="offcanvas-title fw-bold">🍕 Tu Pedido</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body d-flex flex-column">
+        <div id="cartList" class="mb-4">
+            <p class="text-center text-muted py-5">¿Aún no tienes hambre? ¡Agrega algo!</p>
+        </div>
+
+        <div id="checkoutForm" style="display: none;">
+            <hr>
+            <label class="fw-bold mb-2 small">Forma de Pago:</label>
+            <select id="paymentMethod" class="form-select mb-3" onchange="toggleBankDetails()">
+                <option value="Efectivo">Efectivo (Paga al recibir)</option>
+                <option value="Transferencia">Transferencia Bancaria</option>
+            </select>
+
+            <div id="bankDetails" class="bank-box mb-3" style="display: none;">
+                <strong>Banco Popular:</strong> 123456789<br>
+                <strong>Banco BHD:</strong> 987654321<br>
+                <small class="text-danger">* Envía captura por WhatsApp.</small>
+            </div>
+
+            <textarea id="orderNotes" class="form-control mb-3" rows="2" placeholder="Notas: Sin cebolla, traer cambio..."></textarea>
+
+            <div class="d-flex justify-content-between fs-4 fw-bold mb-3">
+                <span>Total:</span>
+                <span id="totalPrice">$0.00</span>
+            </div>
+            <p class="text-center text-muted small">Haz clic en el botón rojo de abajo para finalizar tu pedido.</p>
+        </div>
+    </div>
+</div>
+
+<button id="btnPedirRojo" class="floating-order" onclick="sendToWhatsApp()">
+    <i class="bi bi-whatsapp fs-4"></i>
+    <span>ENVIAR PEDIDO (<span id="floatQty">0</span>)</span>
+</button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Base de Datos con PRECIOS DIFERENTES por producto
+const products = [
+    { 
+        id: 1, type: "pizza", name: "Miriam Full Carnivora", 
+        img: "Img/Pizza/Miriam_Full_Carnivora.jpeg",
+        prices: { small: 350, medium: 675, large: 875 } 
+    },
+    { 
+        id: 2, type: "pizza", name: "Miriam Full Mixta", 
+        img: "Img/Pizza/mirian_full_mixta.jpeg",
+        prices: { small: 325, medium: 650, large: 750 } 
+    },
+    { 
+        id: 3, type: "pizza", name: "Miriam Mixta", 
+        img: "Img/Pizza/mirian_full_mixta.jpeg",
+        prices: { small: 290, medium: 600, large: 725 } 
+    },
+     { 
+        id: 4, type: "pizza", name: "Jamon y Pollo", 
+        img: "Img/Pizza/Jamon_queso.jpeg",
+        prices: { small: 250, medium: 525, large: 675 } 
+    },
+     { 
+        id: 5, type: "pizza", name: "Pollo", 
+        img: "Img/Pizza/Pollo_borde.jpeg",
+        prices: { small: 225, medium: 475, large: 600 } 
+    },
+     { 
+        id: 6, type: "pizza", name: "Jamon y Queso", 
+        img: "Img/Pizza/Jamon_queso.jpeg",
+        prices: { small: 175, medium: 400, large: 575 } 
+    },
+
+   
+    { 
+        id: 8, type: "pizza", name: "Salami y Queso", 
+        img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400",
+        prices: { small: 200, medium: 440, large: 575 } 
+    },
+    { 
+        id: 9, type: "pizza", name: "Jamon, Queso y Maiz", 
+        img: "Img/Pizza/Maiz.jpeg",
+        prices: { small: 250, medium: 525, large: 675 } 
+    },
+    { 
+        id: 10, type: "pizza", name: "Queso", 
+        img: "Img/Pizza/queso.jpeg",
+        prices: { small: 150, medium: 380, large: 525 } 
+    },
+    ///////////hdk
+
+    { 
+        id: 11, type: "pizza", name: "Hongos", 
+        img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400",
+        prices: { small: 225, medium: 450, large: 625 } 
+    },
+    { 
+        id: 12, type: "pizza", name: "Jamon y Chorizo", 
+        img: "Img/Pizza/Jamon_queso.jpeg",
+        prices: { small: 250, medium: 475, large: 675 } 
+    },
+    { 
+        id: 13, type: "pizza", name: "Chorizo", 
+        img: "Img/Pizza/chorizo.jpeg",
+        prices: { small: 225, medium: 475, large: 625 } 
+    },
+    { 
+        id: 14, type: "pizza", name: "Tocineta", 
+        img: "Img/Pizza/tocineta.jpeg",
+        prices: { small: 275, medium: 575, large: 780 } 
+    },
+    { 
+        id: 15, type: "pizza", name: "Vegetales", 
+        img: "Img/Pizza/vegetales.jpeg",
+        prices: { small: 200, medium: 425, large: 575 } 
+    },
+    ///////
+
+    { 
+        id: 16, type: "pizza", name: "Maiz", 
+        img: "Img/Pizza/Maiz.jpeg",
+        prices: { small: 225, medium: 475, large: 600 } 
+    },
+    { 
+        id: 17, type: "pizza", name: "Pepperoni", 
+        img: "Img/Pizza/Pepperoni.jpeg",
+        prices: { small: 225, medium: 450, large: 625 } 
+    },
+    { 
+        id: 18, type: "pizza", name: "Lambi", 
+        img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400",
+        prices: { small: 350, medium: 650, large: 850 } 
+    },
+    { 
+        id: 19, type: "pizza", name: "Masa de cangrejo", 
+        img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400",
+        prices: { small: 350, medium: 700, large: 900 } 
+    },
+
+
+    { 
+        id: 20, type: "sandwich", name: "Club Sandwich", 
+        img: "Img/Pizza/Club_Sandwich.jpeg",
+        prices: { default: 250 } 
+    },
+    { 
+        id: 21, type: "sandwich", name: "Completo Especial", 
+        img: "Img/Pizza/sandwich.jpeg",
+        prices: { default: 200 } 
+    },
+
+
+{ 
+        id: 22, type: "sandwich", name: "Completo", 
+        img: "Img/Pizza/sandwich.jpeg",
+        prices: { default: 175 } 
+    },
+    { 
+        id: 23, type: "sandwich", name: "Pollo y Quero Mozzarella", 
+        img: "Img/Pizza/sandwich.jpeg",
+        prices: { default: 150 } 
+    },
+ { 
+        id: 24, type: "sandwich", name: "Pollo y Queso Danes", 
+        img: "Img/Pizza/sandwich.jpeg",
+        prices: { default: 150 } 
+    },
+     { 
+        id: 25, type: "sandwich", name: "Pierna y Queso Mozzarella", 
+        img: "Img/Pizza/sandwich.jpeg",
+        prices: { default: 170 } 
+    },
+     { 
+        id: 26, type: "sandwich", name: "Pierna y Queso Danes", 
+        img: "Img/Pizza/sandwich.jpeg",
+        prices: { default: 170 } 
+    },
+     { 
+        id: 27, type: "sandwich", name: " Jamon y Queso Cheddar", 
+        img: "Img/Pizza/sandwich.jpeg",
+        prices: { default: 140 } 
+    },
+
+    { 
+        id: 28, type: "sandwich", name: " Derretido de Queso Cheddar", 
+        img: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400",
+        prices: { default: 140 } 
+    },
+    { 
+        id: 29, type: "sandwich", name: " Jamon, Queso y Huevo", 
+        img: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400",
+        prices: { default: 170 } 
+    },
+    { 
+        id: 30, type: "sandwich", name: " Hamburguesas con Bacon", 
+        img: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400",
+        prices: { default: 300 } 
+    },
+    { 
+        id: 31, type: "sandwich", name: " Hamburguesas con una carne", 
+        img: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400",
+        prices: { default: 240 } 
+    },
+    { 
+        id: 32, type: "sandwich", name: " Hamburguesas doble carne", 
+        img: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400",
+        prices: { default: 325 } 
+    },
+    { 
+        id: 33, type: "sandwich", name: " Pechuga a la plancha", 
+        img: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400",
+        prices: { default: 285 } 
+    },
+
+    { 
+        id: 34, type: "sandwich", name: " Mofongo Solo", 
+        img: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400",
+        prices: { default: 150 } 
+    },
+    { 
+        id: 35, type: "sandwich", name: " Mofongo con queso", 
+        img: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400",
+        prices: { default: 200 } 
+    },
+    { 
+        id: 36, type: "sandwich", name: " Mofongo con pechurina", 
+        img: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400",
+        prices: { default: 450 } 
+    },
+    { 
+        id: 37, type: "sandwich", name: " Mofongo con pechuga", 
+        img: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400",
+        prices: { default: 395 } 
+    },
+    { 
+        id: 38, type: "sandwich", name: " Mofongo con alitas", 
+        img: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400",
+        prices: { default: 425 } 
+    },
+    // JUGOS CON DOS PRECIOS (NA y CA)
+    { 
+        id: 39, type: "Jugos", name: "Lechoza", 
+        img: "Img/Jugos/lechoza.png", 
+        prices: { na: 75, ca: 120} 
+    },
+    { 
+        id: 40, type: "Jugos", name: "Zapote", 
+        img: "Img/Jugos/zapote.png", 
+        prices: { na: 75, ca: 120} 
+    },
+    { 
+        id: 41, type: "Jugos", name: "Chinola", 
+        img: "Img/Jugos/china.webp", 
+        prices: { na: 75, ca: 120} 
+    },
+    { 
+        id: 42, type: "Jugos", name: "Cereza", 
+        img: "Img/Jugos/cereza.png", 
+        prices: { na: 75, ca: 120} 
+    },
+    { 
+        id: 43, type: "Jugos", name: "China", 
+        img: "Img/Jugos/naranja.jpg", 
+        prices: { na: 75, ca: 120} 
+    },
+    { 
+        id: 44, type: "Jugos", name: "Pina", 
+        img: "Img/Jugos/pina.png", 
+        prices: { na: 75, ca: 120} 
+    },
+    { 
+        id: 45, type: "Jugos", name: "Limon", 
+        img: "Img/Jugos/limon.jpg", 
+        prices: { na: 75, ca: 120}  
+    },
+    { 
+        id: 46, type: "Jugos", name: "Guineo", 
+        img: "Img/Jugos/guineo.png", 
+        prices: { na: 75, ca: 120} 
+    },
+      { 
+        id: 47, type: "Jugos", name: "Melon", 
+        img: "Img/Jugos/melon.png", 
+        prices: { na: 75, ca: 120} 
+    },
+      { 
+        id: 48, type: "Jugos", name: "Fresa", 
+        img: "Img/Jugos/fresa.png", 
+        prices: { na: 100, ca: 150 } 
+    },
+      { 
+        id: 49, type: "Jugos", name: "Mango", 
+        img: "Img/Jugos/mango.webp", 
+        prices: { na: 75, ca: 120} 
+    },
+    
+];
+
+const cart = [];
+const btnPedirRojo = document.getElementById('btnPedirRojo');
+const offcanvasElement = document.getElementById('cartSidebar');
+const cartSidebar = new bootstrap.Offcanvas(offcanvasElement);
+
+offcanvasElement.addEventListener('shown.bs.offcanvas', () => { if(cart.length > 0) btnPedirRojo.style.display = 'flex'; });
+offcanvasElement.addEventListener('hide.bs.offcanvas', () => { btnPedirRojo.style.display = 'none'; });
+
+function renderMenu(category = 'pizza') {
+    const container = document.getElementById("menuContainer");
+    container.innerHTML = ""; 
+    const filtered = products.filter(p => p.type === category);
+
+    filtered.forEach(p => {
+        let optionsHTML = "";
+        
+       if(p.type === 'pizza') {
+   // Dentro de tu renderMenu, donde generas el HTML de la pizza:
+optionsHTML = `
+    <select id="size-${p.id}" class="form-select form-select-sm mb-2" onchange="updatePizzaOptions(${p.id})">
+        <option value="small">Pequeña - $${p.prices.small}</option>
+        <option value="medium" selected>Mediana - $${p.prices.medium}</option>
+        <option value="large">Grande - $${p.prices.large}</option>
+    </select>
+
+    <select id="border-${p.id}" class="form-select form-select-sm mb-2">
+        <option value="0">Sin borde extra</option>
+    </select>
+
+    <select id="extra-${p.id}" class="form-select form-select-sm mb-2">
+        <option value="0">Sin extras</option>
+    </select>`;
+
+// Al final de renderMenu, después de que se agregue el HTML al container, 
+// debemos disparar la actualización inicial para que aparezcan las opciones de "Mediana"
+setTimeout(() => updatePizzaOptions(p.id), 0);
+} else if(p.type === 'Jugos') {
+    // ... tu código de jugos se mantiene igual
+    optionsHTML = `
+        <select id="size-${p.id}" class="form-select form-select-sm mb-2">
+            <option value="na">(NA) - $${p.prices.na}</option>
+            <option value="ca">(CA) - $${p.prices.ca}</option>
+        </select>`;
+} else {
+    optionsHTML = `<div class="mb-2 text-muted fw-bold">Precio: $${p.prices.default}</div>
+                   <input type="hidden" id="size-${p.id}" value="default">`;
+}
+        container.innerHTML += `
+        <div class="col-6 col-md-4">
+            <div class="pizza-card">
+                <div>
+                    <img src="${p.img}" class="pizza-img">
+                    <h6 class="fw-bold mb-1">${p.name}</h6>
+                    ${optionsHTML}
+                </div>
+                <button class="btn btn-add mt-2" onclick="addToCart(${p.id})">Agregar ➕</button>
+            </div>
+        </div>`;
+    });
+}
+
+function filterMenu(category, btn) {
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderMenu(category);
+}
+
+function addToCart(id) {
+    const prod = products.find(x => x.id === id);
+    const size = document.getElementById(`size-${id}`).value;
+    
+    let basePrice = 0;
+    let extraDetails = ""; // Para mostrar en el carrito qué extras eligió
+    let additionalCost = 0;
+
+    // 1. Calcular precio base
+    if (prod.type === 'pizza' || prod.type === 'Jugos') {
+        basePrice = prod.prices[size];
+    } else {
+        basePrice = prod.prices.default;
+    }
+
+    // 2. Si es pizza, sumar Borde y Extra
+    if (prod.type === 'pizza') {
+        const borderVal = parseInt(document.getElementById(`border-${id}`).value);
+        const extraVal = parseInt(document.getElementById(`extra-${id}`).value);
+        
+        additionalCost = borderVal + extraVal;
+        
+        if(borderVal > 0) extraDetails += " + Borde Relleno";
+        if(extraVal > 0) extraDetails += " + Ingrediente Extra";
+    }
+
+    const finalPrice = basePrice + additionalCost;
+
+    const sizeLabels = { 
+        na: 'Natural', ca: 'Carnation', 
+        small: 'Pequeña', medium: 'Mediana', 
+        large: 'Grande', default: 'Único' 
+    };
+
+    cart.push({
+        id: Date.now(),
+        name: prod.name + extraDetails, // Añadimos los extras al nombre para que se vea en el ticket
+        size: sizeLabels[size] || size,
+        price: finalPrice
+    });
+
+    updateCartUI();
+    cartSidebar.show(); 
+}
+function updatePizzaOptions(id) {
+    const size = document.getElementById(`size-${id}`).value;
+    const borderSelect = document.getElementById(`border-${id}`);
+    const extraSelect = document.getElementById(`extra-${id}`);
+
+    // Definir los precios según el tamaño
+    const precios = {
+        small:  { borde: 100, extra: 50,  label: "Pequeña" },
+        medium: { borde: 150, extra: 75,  label: "Mediana" },
+        large:  { borde: 200, extra: 100, label: "Grande" }
+    };
+
+    const p = precios[size];
+
+    // Reconstruir Borde
+    borderSelect.innerHTML = `
+        <option value="0">Sin borde extra</option>
+        <option value="${p.borde}">Borde Relleno (${p.label}) +$${p.borde}</option>
+    `;
+
+    // Reconstruir Extras
+    extraSelect.innerHTML = `
+        <option value="0">Sin extras</option>
+        <option value="${p.extra}">Ingrediente Extra +$${p.extra}</option>
+    `;
+}
+function updateCartUI() {
+    const list = document.getElementById("cartList");
+    const checkoutForm = document.getElementById("checkoutForm");
+    let html = "";
+    let total = 0;
+
+    cart.forEach((item, index) => {
+        total += item.price;
+        html += `
+        <div class="cart-item">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <strong style="font-size: 0.85rem;">${item.name}</strong><br>
+                    <span class="badge bg-light text-dark" style="font-size: 0.7rem;">${item.size}</span>
+                </div>
+                <div class="text-end">
+                    <div class="fw-bold">$${item.price}</div>
+                    <button class="btn btn-sm text-danger p-0" onclick="removeItem(${index})"><i class="bi bi-trash"></i></button>
+                </div>
+            </div>
+        </div>`;
+    });
+
+    if(cart.length > 0) {
+        list.innerHTML = html;
+        checkoutForm.style.display = "block";
+    } else {
+        list.innerHTML = `<p class="text-center text-muted py-5">Tu carrito está vacío</p>`;
+        checkoutForm.style.display = "none";
+        btnPedirRojo.style.display = "none";
+    }
+
+    document.getElementById("cartCount").innerText = cart.length;
+    document.getElementById("floatQty").innerText = cart.length;
+    document.getElementById("totalPrice").innerText = `$${total.toFixed(2)}`;
+}
+
+function removeItem(index) {
+    cart.splice(index, 1);
+    updateCartUI();
+}
+
+function toggleBankDetails() {
+    const method = document.getElementById("paymentMethod").value;
+    document.getElementById("bankDetails").style.display = (method === "Transferencia") ? "block" : "none";
+}
+
+function sendToWhatsApp() {
+    const method = document.getElementById("paymentMethod").value;
+    const notes = document.getElementById("orderNotes").value;
+    let total = 0;
+
+    let msg = `🍕 *NUEVO PEDIDO - PIZZA MIRIAN*\n`;
+    msg += `--------------------------------\n\n`;
+
+    cart.forEach(item => {
+        msg += `✅ *${item.name}* (${item.size})\n`;
+        msg += `   • Precio: $${item.price}\n\n`;
+        total += item.price;
+    });
+
+    msg += `--------------------------------\n`;
+    msg += `💰 *TOTAL A PAGAR: $${total}*\n`;
+    msg += `💳 *Pago:* ${method}\n`;
+    if(notes) msg += `📝 *Notas:* ${notes}\n`;
+
+    const phone = "8094092740";
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
+}
+
+renderMenu('pizza');
+</script>
+
+</body>
+>>>>>>> 557c0a99ac92e20f46ca0bf802d638f8e0352b07
 </html>
