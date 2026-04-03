@@ -159,8 +159,11 @@
             </select>
 
             <div id="bankDetails" class="bank-box mb-3" style="display: none;">
-                <strong>Banco Popular:</strong> 123456789<br>
-                <strong>Banco BHD:</strong> 987654321<br>
+                <strong>Banco Popular:</strong>836355628<br>
+                <strong>Banco BHD:</strong>13259560020<br>
+                <strong>Ban Reservas:</strong>9606271554<br>
+                <label for=""><strong>Jorge De Los Santos</strong></label><br>
+
                 <small class="text-danger">* Envía captura por WhatsApp.</small>
             </div>
 
@@ -202,7 +205,7 @@ const products = [
     },
      { 
         id: 4, type: "pizza", name: "Jamon y Pollo", 
-        img: "Img/Pizza/Jamon_queso.jpeg",
+        img: "Img/Pizza/Jamon_Queso.jpeg",
         prices: { small: 250, medium: 525, large: 675 } 
     },
      { 
@@ -212,7 +215,7 @@ const products = [
     },
      { 
         id: 6, type: "pizza", name: "Jamon y Queso", 
-        img: "Img/Pizza/Jamon_queso.jpeg",
+        img: "Img/Pizza/Jamon_Queso.jpeg",
         prices: { small: 175, medium: 400, large: 575 } 
     },
 
@@ -241,7 +244,7 @@ const products = [
     },
     { 
         id: 12, type: "pizza", name: "Jamon y Chorizo", 
-        img: "Img/Pizza/Jamon_queso.jpeg",
+        img: "Img/Pizza/Jamon_Queso.jpeg",
         prices: { small: 250, medium: 475, large: 675 } 
     },
     { 
@@ -513,55 +516,56 @@ function addToCart(id) {
     const size = document.getElementById(`size-${id}`).value;
     
     let basePrice = 0;
-    let extraDetails = ""; // Para mostrar en el carrito qué extras eligió
+    let extraName = "";
+    let borderName = "";
     let additionalCost = 0;
 
-    // 1. Calcular precio base
     if (prod.type === 'pizza' || prod.type === 'Jugos') {
         basePrice = prod.prices[size];
     } else {
         basePrice = prod.prices.default;
     }
 
-    // 2. Si es pizza, sumar Borde y Extra
     if (prod.type === 'pizza') {
-        const borderVal = parseInt(document.getElementById(`border-${id}`).value);
-        const extraVal = parseInt(document.getElementById(`extra-${id}`).value);
+        const borderSelect = document.getElementById(`border-${id}`);
+        const extraSelect = document.getElementById(`extra-${id}`);
+        
+        const borderVal = parseInt(borderSelect.value);
+        const extraVal = parseInt(extraSelect.value);
+        
+        // Capturamos los nombres por separado
+        if(borderVal > 0) borderName = "Borde Relleno";
+        if(extraVal > 0) {
+            extraName = extraSelect.options[extraSelect.selectedIndex].getAttribute('data-name');
+        }
         
         additionalCost = borderVal + extraVal;
-        
-        if(borderVal > 0) extraDetails += " + Borde Relleno";
-        if(extraVal > 0) extraDetails += " + Ingrediente Extra";
     }
 
     const finalPrice = basePrice + additionalCost;
-
-    const sizeLabels = { 
-        na: 'Natural', ca: 'Carnation', 
-        small: 'Pequeña', medium: 'Mediana', 
-        large: 'Grande', default: 'Único' 
-    };
+    const sizeLabels = { na: 'Natural', ca: 'Carnation', small: 'Pequeña', medium: 'Mediana', large: 'Grande', default: 'Único' };
 
     cart.push({
         id: Date.now(),
-        name: prod.name + extraDetails, // Añadimos los extras al nombre para que se vea en el ticket
+        name: prod.name,
         size: sizeLabels[size] || size,
-        price: finalPrice
+        price: finalPrice,
+        border: borderName, // Nuevo campo
+        extra: extraName    // Nuevo campo
     });
 
     updateCartUI();
-    cartSidebar.show(); 
+    if(typeof cartSidebar !== 'undefined') cartSidebar.show(); 
 }
 function updatePizzaOptions(id) {
     const size = document.getElementById(`size-${id}`).value;
     const borderSelect = document.getElementById(`border-${id}`);
     const extraSelect = document.getElementById(`extra-${id}`);
 
-    // Definir los precios según el tamaño
     const precios = {
-        small:  { borde: 100, extra: 50,  label: "Pequeña" },
-        medium: { borde: 150, extra: 75,  label: "Mediana" },
-        large:  { borde: 200, extra: 100, label: "Grande" }
+        small:  { borde: 125, extra: 75,  label: "Pequeña" },
+        medium: { borde: 250, extra: 100, label: "Mediana" },
+        large:  { borde: 300, extra: 150, label: "Grande" }
     };
 
     const p = precios[size];
@@ -572,10 +576,14 @@ function updatePizzaOptions(id) {
         <option value="${p.borde}">Borde Relleno (${p.label}) +$${p.borde}</option>
     `;
 
-    // Reconstruir Extras
+    // Reconstruir Extras con ingredientes específicos
+    // Usamos el "data-name" para saber qué ingrediente es después
     extraSelect.innerHTML = `
-        <option value="0">Sin extras</option>
-        <option value="${p.extra}">Ingrediente Extra +$${p.extra}</option>
+        <option value="0" data-name="">Sin extras</option>
+        <option value="${p.extra}" data-name="Extra Queso">Extra Queso +$${p.extra}</option>
+        <option value="${p.extra}" data-name="Extra Jamón">Extra Jamón +$${p.extra}</option>
+        <option value="${p.extra}" data-name="Extra Tocineta">Extra Tocineta +$${p.extra}</option>
+        <option value="${p.extra}" data-name="Extra Pepperoni">Extra Pepperoni +$${p.extra}</option>
     `;
 }
 function updateCartUI() {
@@ -587,11 +595,13 @@ function updateCartUI() {
     cart.forEach((item, index) => {
         total += item.price;
         html += `
-        <div class="cart-item">
+        <div class="cart-item border-bottom mb-2 pb-2">
             <div class="d-flex justify-content-between">
                 <div>
-                    <strong style="font-size: 0.85rem;">${item.name}</strong><br>
-                    <span class="badge bg-light text-dark" style="font-size: 0.7rem;">${item.size}</span>
+                    <strong style="font-size: 0.9rem;">${item.name}</strong><br>
+                    <small class="text-muted">${item.size}</small>
+                    ${item.border ? `<br><small class="text-success"> + ${item.border}</small>` : ''}
+                    ${item.extra ? `<br><small class="text-primary"> + ${item.extra}</small>` : ''}
                 </div>
                 <div class="text-end">
                     <div class="fw-bold">$${item.price}</div>
@@ -607,14 +617,35 @@ function updateCartUI() {
     } else {
         list.innerHTML = `<p class="text-center text-muted py-5">Tu carrito está vacío</p>`;
         checkoutForm.style.display = "none";
-        btnPedirRojo.style.display = "none";
+    }
+    
+    document.getElementById("totalPrice").innerText = `$${total.toFixed(2)}`;
+
+    // === AQUÍ AGREGAMOS EL CONTEO ===
+    const cantidadTotal = cart.length;
+
+    // Actualiza el número en el botón rojo flotante
+    const floatQty = document.getElementById("floatQty");
+    if (floatQty) {
+        floatQty.innerText = cantidadTotal;
     }
 
-    document.getElementById("cartCount").innerText = cart.length;
-    document.getElementById("floatQty").innerText = cart.length;
-    document.getElementById("totalPrice").innerText = `$${total.toFixed(2)}`;
-}
+    // Actualiza el número en el icono del carrito (cartCount)
+    const cartCount = document.getElementById("cartCount");
+    if (cartCount) {
+        cartCount.innerText = cantidadTotal;
+    }
 
+    // Muestra u oculta el botón rojo flotante dependiendo de si hay artículos
+    const btnPedirRojo = document.getElementById("btnPedirRojo");
+    if (btnPedirRojo) {
+        if (cantidadTotal > 0) {
+            btnPedirRojo.style.display = "flex"; // Se muestra si hay algo
+        } else {
+            btnPedirRojo.style.display = "none"; // Se oculta si está vacío
+        }
+    }
+}
 function removeItem(index) {
     cart.splice(index, 1);
     updateCartUI();
@@ -635,7 +666,18 @@ function sendToWhatsApp() {
 
     cart.forEach(item => {
         msg += `✅ *${item.name}* (${item.size})\n`;
-        msg += `   • Precio: $${item.price}\n\n`;
+        
+        // Si tiene borde, lo ponemos debajo
+        if(item.border) {
+            msg += `   └ 🧀 ${item.border}\n`;
+        }
+        
+        // Si tiene extra, lo ponemos debajo
+        if(item.extra) {
+            msg += `   └ ➕ ${item.extra}\n`;
+        }
+
+        msg += `   • Subtotal: $${item.price}\n\n`;
         total += item.price;
     });
 
@@ -644,17 +686,10 @@ function sendToWhatsApp() {
     msg += `💳 *Pago:* ${method}\n`;
     if(notes) msg += `📝 *Notas:* ${notes}\n`;
 
-    // 1. IMPORTANTE: Agregar el '1' al principio para República Dominicana
     const phone = "18094092740"; 
-    
-    // 2. Usar api.whatsapp.com y encodeURIComponent
     const url = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}`;
-
-    // 3. En iPhone, a veces window.open falla si no hay una interacción directa clara
-    // Esta es la forma más compatible:
     window.location.href = url;
 }
-
 renderMenu('pizza');
 </script>
 
