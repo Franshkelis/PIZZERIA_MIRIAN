@@ -662,6 +662,7 @@ function toggleBankDetails() {
 }
 
 function sendToWhatsApp() {
+    const delivery = document.getElementById("deliveryType").value;
     const method = document.getElementById("paymentMethod").value;
     const notes = document.getElementById("orderNotes").value;
     let total = 0;
@@ -687,6 +688,7 @@ function sendToWhatsApp() {
     });
 
     msg += `--------------------------------\n`;
+    msg += `📍 *Entrega:* ${delivery}\n`;
     msg += `💰 *TOTAL A PAGAR: $${total}*\n`;
     msg += `💳 *Pago:* ${method}\n`;
     if(notes) msg += `📝 *Notas:* ${notes}\n`;
