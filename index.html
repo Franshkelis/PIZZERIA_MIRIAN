@@ -151,6 +151,11 @@
         </div>
 
         <div id="checkoutForm" style="display: none;">
+            <label class="fw-bold mb-2 small">¿Cómo quieres tu pedido?</label>
+<select id="deliveryType" class="form-select mb-3">
+    <option value="Delivery">🛵 Delivery </option>
+    <option value="Retiro">🏢 Pasar a buscar (Local)</option>
+</select>
             <hr>
             <label class="fw-bold mb-2 small">Forma de Pago:</label>
             <select id="paymentMethod" class="form-select mb-3" onchange="toggleBankDetails()">
