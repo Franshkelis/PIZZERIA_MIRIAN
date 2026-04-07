@@ -28,30 +28,32 @@
         .navbar-brand { font-weight: 800; color: var(--pizza-red) !important; font-size: 1.3rem; }
 
         /* Categorías */
-        .category-scroller {
-            display: flex;
-            overflow-x: auto;
-            white-space: nowrap;
-            background: white;
-            padding: 10px;
-            gap: 10px;
-            position: sticky;
-            top: 60px;
-            z-index: 1000;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            scrollbar-width: none;
-        }
-        .category-scroller::-webkit-scrollbar { display: none; }
-        
-        .cat-btn {
-            padding: 8px 20px;
-            border-radius: 25px;
-            border: 2px solid var(--pizza-orange);
-            background: transparent;
-            color: var(--pizza-orange);
-            font-weight: 600;
-            transition: 0.3s;
-        }
+       /* Categorías en múltiples filas para móviles */
+.category-scroller {
+    display: flex;
+    flex-wrap: wrap; /* Esto hace que los botones pasen abajo si no caben */
+    justify-content: center; /* Los centra para que se vea más profesional */
+    background: white;
+    padding: 12px 5px;
+    gap: 8px; /* Espacio entre botones (tanto horizontal como vertical) */
+    position: sticky;
+    top: 60px;
+    z-index: 1000;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+
+.cat-btn {
+    padding: 8px 15px;
+    border-radius: 25px;
+    border: 2px solid var(--pizza-orange);
+    background: transparent;
+    color: var(--pizza-orange);
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: 0.3s;
+    white-space: nowrap;
+    /* Eliminamos flex: 0 0 auto para que el wrap funcione mejor */
+}
         .cat-btn.active {
             background: var(--pizza-orange);
             color: white;
@@ -131,9 +133,19 @@
 </nav>
 
 <div class="category-scroller">
+  
     <button class="cat-btn active" onclick="filterMenu('pizza', this)">🍕 Pizzas</button>
+    
     <button class="cat-btn" onclick="filterMenu('sandwich', this)">🥪 Sándwiches</button>
+    
+    <button class="cat-btn" onclick="filterMenu('Otros', this)">🍱 Otros Platos</button>
+    
     <button class="cat-btn" onclick="filterMenu('Jugos', this)">🥤 Jugos</button>
+    
+    <button class="cat-btn" onclick="filterMenu('bebidas', this)">🍾 Bebidas</button>
+
+  
+    
 </div>
 
 <div class="container mt-3 mb-5">
@@ -360,37 +372,73 @@ const products = [
         prices: { default: 325 } 
     },
     { 
-        id: 33, type: "sandwich", name: " Pechuga a la plancha", 
-        img: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400",
+        id: 33, type: "Otros", name: " Burrito de pollo con papas fritas", 
+        img: "Img/Pizza/burrito.jpeg",
+        prices: { default: 225 } 
+    },
+     { 
+        id: 54, type: "Otros", name: " Burrito de pollo sin papa", 
+        img: "Img/Pizza/burritosinpapa.jpg",
+        prices: { default: 150 } 
+    },
+    { 
+        id: 33, type: "Otros", name: " Pechuga a la plancha", 
+        img: "Img/Pizza/pechugaplancha.jpg",
         prices: { default: 285 } 
     },
 
     { 
-        id: 34, type: "sandwich", name: " Mofongo Solo", 
-        img: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400",
-        prices: { default: 150 } 
+        id: 34, type: "Otros", name: " Mofongo Solo", 
+        img: "Img/Pizza/mofongosolo.webp",
+        prices: { default: 150 }
     },
     { 
-        id: 35, type: "sandwich", name: " Mofongo con queso", 
-        img: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400",
+        id: 35, type: "Otros", name: " Mofongo con queso", 
+        img: "Img/Pizza/mofongoconueso.webp",
         prices: { default: 200 } 
     },
     { 
-        id: 36, type: "sandwich", name: " Mofongo con pechurina", 
-        img: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400",
+        id: 36, type: "Otros", name: " Mofongo con pechurina", 
+        img: "Img/Pizza/mofongoconpechurina.jpg",
         prices: { default: 450 } 
     },
     { 
-        id: 37, type: "sandwich", name: " Mofongo con pechuga", 
-        img: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400",
+        id: 37, type: "Otros", name: " Mofongo con pechuga", 
+        img: "Img/Pizza/mofongoconpechuga.jpg",
         prices: { default: 395 } 
     },
     { 
-        id: 38, type: "sandwich", name: " Mofongo con alitas", 
-        img: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400",
+        id: 38, type: "Otros", name: " Mofongo con alitas", 
+        img: "Img/Pizza/alitas.jpeg",
         prices: { default: 425 } 
     },
     // JUGOS CON DOS PRECIOS (NA y CA)
+    { 
+        id: 39, type: "bebidas", name: "Agua Planeta Azul", 
+        img: "Img/Bebidas/agua.png", 
+        prices: {default: 20} 
+    },
+    { 
+        id: 57, type: "bebidas", name: "Agua Dasani", 
+        img: "Img/Bebidas/agua_dasani.png", 
+        prices: {default: 30} 
+    },
+     { 
+        id: 59, type: "bebidas", name: "Coca Cola 1.25L", 
+        img: "Img/Bebidas/cocacola1.25.webp", 
+        prices: {default: 75} 
+    },
+    { 
+        id: 58, type: "bebidas", name: "Coca Cola 500ML", 
+        img: "Img/Bebidas/cocacola2.webp", 
+        prices: {default: 40} 
+    },
+     { 
+        id: 56, type: "bebidas", name: "Coca Cola 400ML", 
+        img: "Img/Bebidas/cocacola2.webp", 
+        prices: {default: 30} 
+    },
+    
     { 
         id: 39, type: "Jugos", name: "Lechoza", 
         img: "Img/Jugos/lechoza.png", 
@@ -584,11 +632,14 @@ function updatePizzaOptions(id) {
     // Reconstruir Extras con ingredientes específicos
     // Usamos el "data-name" para saber qué ingrediente es después
     extraSelect.innerHTML = `
-        <option value="0" data-name="">Sin extras</option>
+       <option value="0" data-name="">Sin extras</option>
         <option value="${p.extra}" data-name="Extra Queso">Extra Queso +$${p.extra}</option>
         <option value="${p.extra}" data-name="Extra Jamón">Extra Jamón +$${p.extra}</option>
+        <option value="${p.extra}" data-name="Extra Pepperoni">Extra Pollo +$${p.extra}</option>
         <option value="${p.extra}" data-name="Extra Tocineta">Extra Tocineta +$${p.extra}</option>
         <option value="${p.extra}" data-name="Extra Pepperoni">Extra Pepperoni +$${p.extra}</option>
+        <option value="${p.extra}" data-name="Extra Pepperoni">Extra Hongos +$${p.extra}</option>
+        <option value="${p.extra}" data-name="Extra Pepperoni">Extra Vegetales +$${p.extra}</option>
     `;
 }
 function updateCartUI() {
@@ -693,7 +744,7 @@ function sendToWhatsApp() {
     msg += `💳 *Pago:* ${method}\n`;
     if(notes) msg += `📝 *Notas:* ${notes}\n`;
 
-    const phone = "18094092740"; 
+    const phone = "18096383728"; 
     const url = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}`;
     window.location.href = url;
 }
